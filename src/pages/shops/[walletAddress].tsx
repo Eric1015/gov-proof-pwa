@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
-import { Button, Container, Grid, TextField } from '@mui/material';
+import {
+  Button,
+  Container,
+  Grid,
+  TextField,
+  Box,
+  Typography,
+} from '@mui/material';
 import { useRouter } from 'next/router';
 import { useAccount } from 'wagmi';
 import QRCode from 'react-qr-code';
@@ -9,12 +16,14 @@ import {
   verifyMultiProof,
 } from '@/app/helpers/merkleTreeHelper';
 import useEASProvider from '@/app/hooks/useEASProvider';
-import Image from 'next/image';
+import UserInformation from '@/app/components/UserInformation';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ShopQRCodeModal from '@/app/components/ShopQRCodeModal';
 
 export default function ShopDetail() {
   const router = useRouter();
   const { walletAddress = '' } = router.query;
-  const { isConnected, address } = useAccount();
+  const { isConnected, address: connectedWalletAddress } = useAccount();
   const { getAttestationByUid, createUserVerifiedAttestation } =
     useEASProvider();
   const socket = useRef();
@@ -24,10 +33,19 @@ export default function ShopDetail() {
   const [attestationUid, setAttestationUid] = useState('');
   const [providedPrivateDataProof, setProvidedPrivateDataProof] =
     useState<MerkleMultiProof>();
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [address, setAddress] = useState('');
+  const [isAdult, setAdult] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
   const [recipientAddress, setRecipientAddress] = useState('');
   const [attestationExpiredIn, setAttestationExpiredIn] = useState(10);
   const [generatedAttestationUid, setGeneratedAttestationUid] = useState('');
+  const [isProofVerificationFinished, setProofVerificationFinished] =
+    useState(false);
+  const [proofVerificationResult, setProofVerificationResult] = useState(false);
+  const [showQrCode, setShowQrCode] = useState(false);
 
   const handleGrantUserAccessClick = async () => {
     const generatedAttestationUid = await createUserVerifiedAttestation(
@@ -37,8 +55,13 @@ export default function ShopDetail() {
     setGeneratedAttestationUid(generatedAttestationUid);
   };
 
-  const extractImageUrlFromProof = (proof: MerkleMultiProof) => {
-    const imageLeaves = proof.leaves.filter((leaf) => leaf.name === 'imageUrl');
+  const extractAttributeFromProof = (
+    proof: MerkleMultiProof,
+    attributeName: string
+  ) => {
+    const imageLeaves = proof.leaves.filter(
+      (leaf) => leaf.name === attributeName
+    );
     if (!imageLeaves.length) {
       return '';
     }
@@ -46,18 +69,24 @@ export default function ShopDetail() {
   };
 
   useEffect(() => {
-    if (walletAddress && address && walletAddress !== address) {
-      router.push(`/shops/${walletAddress}`);
+    if (
+      walletAddress &&
+      connectedWalletAddress &&
+      walletAddress !== connectedWalletAddress
+    ) {
+      router.push(`/shops/${connectedWalletAddress}`);
     }
-  }, [walletAddress, address, router]);
+  }, [walletAddress, connectedWalletAddress, router]);
 
   useEffect(() => {
-    setCurrentUrl(`https://${window.location.host}?targetAddress=${address}`);
-  }, [address]);
+    setCurrentUrl(
+      `https://${window.location.host}?targetAddress=${connectedWalletAddress}`
+    );
+  }, [connectedWalletAddress]);
 
   useEffect(() => {
     const socketInitializer = async () => {
-      if (address) {
+      if (connectedWalletAddress) {
         // awaking the socket server
         await fetch(`/api/socket`);
         const newSocket = io();
@@ -77,8 +106,15 @@ export default function ShopDetail() {
             setRecipientAddress(attestation?.recipient);
             const verificationResult = await verifyMultiProof(proof, rootHash);
             if (verificationResult) {
-              setImageUrl(extractImageUrlFromProof(proof));
+              setFirstName(extractAttributeFromProof(proof, 'firstName'));
+              setLastName(extractAttributeFromProof(proof, 'lastName'));
+              setDateOfBirth(extractAttributeFromProof(proof, 'dateOfBirth'));
+              setAddress(extractAttributeFromProof(proof, 'address'));
+              setAdult(extractAttributeFromProof(proof, 'isAdult'));
+              setImageUrl(extractAttributeFromProof(proof, 'imageUrl'));
             }
+            setProofVerificationResult(verificationResult);
+            setProofVerificationFinished(true);
           }
         );
         // @ts-ignore
@@ -87,37 +123,75 @@ export default function ShopDetail() {
     };
 
     socketInitializer();
-  }, [address, getAttestationByUid]);
+  }, [connectedWalletAddress, getAttestationByUid]);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <Container maxWidth="md">
-        <Grid container justifyContent="center">
-          <Grid xs={4} item>
-            <QRCode
-              size={256}
-              style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
-              value={currentUrl}
-              viewBox={`0 0 256 256`}
-            />
-          </Grid>
-        </Grid>
-        {imageUrl && (
-          <Grid container>
-            <Grid container justifyContent="center">
-              <Grid xs={4} item>
-                <Image
-                  src={imageUrl}
-                  alt="profile image"
-                  height={200}
-                  width={200}
-                />
+      <Container maxWidth="md" sx={{ mt: 4 }}>
+        {!isProofVerificationFinished ? (
+          <Grid container justifyContent="center">
+            <Grid container item>
+              <Grid item>
+                <Typography variant="body1" sx={{ m: 2 }}>
+                  {'Open QR code for users to scan and provide proof'}
+                </Typography>
               </Grid>
             </Grid>
-            <Grid container justifyContent="center">
+            <Grid container item sx={{ m: 2 }}>
+              <Grid item>
+                <Button variant="contained" onClick={() => setShowQrCode(true)}>
+                  QR Code
+                </Button>
+              </Grid>
+            </Grid>
+            <Grid container item>
+              <Grid item>
+                <Typography variant="body1" sx={{ m: 2 }}>
+                  {"Waiting for user's proof ..."}
+                </Typography>
+              </Grid>
+            </Grid>
+          </Grid>
+        ) : (
+          <Grid
+            container
+            spacing={2}
+            justifyContent="center"
+            sx={{
+              marginTop: 8,
+            }}
+          >
+            {proofVerificationResult && (
+              <Grid container item spacing={1}>
+                <Grid item>
+                  <CheckCircleIcon color="success" />
+                </Grid>
+                <Grid item>
+                  <Typography
+                    variant="body1"
+                    color="success"
+                    sx={{ color: '#2e7d32' }}
+                  >
+                    Verified
+                  </Typography>
+                </Grid>
+              </Grid>
+            )}
+            <Grid item>
+              <UserInformation
+                firstName={firstName}
+                lastName={lastName}
+                isAdult={isAdult}
+                imageUrl={imageUrl}
+                address={address}
+                dateOfBirth={dateOfBirth}
+              />
+            </Grid>
+            <Grid container item>
               <Grid xs={4} item>
                 <TextField
-                  label="Expire duration (min)"
+                  label="User access expire duration (min)"
+                  fullWidth
                   placeholder="Expire in"
                   defaultValue={10}
                   type="number"
@@ -127,15 +201,18 @@ export default function ShopDetail() {
                 />
               </Grid>
             </Grid>
-            <Grid container justifyContent="center">
+            <Grid container item>
               <Grid xs={4} item>
-                <Button onClick={handleGrantUserAccessClick}>
+                <Button
+                  variant="contained"
+                  onClick={handleGrantUserAccessClick}
+                >
                   Grant User Access
                 </Button>
               </Grid>
             </Grid>
             {generatedAttestationUid && (
-              <Grid container justifyContent="center">
+              <Grid container item justifyContent="center">
                 <Grid xs={4} item>
                   <p>{generatedAttestationUid}</p>
                 </Grid>
@@ -144,6 +221,11 @@ export default function ShopDetail() {
           </Grid>
         )}
       </Container>
+      <ShopQRCodeModal
+        isOpen={showQrCode}
+        onClose={() => setShowQrCode(false)}
+        qrCodeUrl={currentUrl}
+      />
     </main>
   );
 }

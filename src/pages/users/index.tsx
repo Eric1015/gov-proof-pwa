@@ -74,7 +74,14 @@ export default function Users() {
       >
         <Container maxWidth="md">
           {!targetAddress ? (
-            <Grid container justifyContent="center">
+            <Grid container justifyContent="center" spacing={2}>
+              <Grid xs={12} item container justifyContent="center">
+                <Grid item>
+                  <Typography variant="body1">
+                    Which shop do you want to provide your proof to?
+                  </Typography>
+                </Grid>
+              </Grid>
               <Grid xs={8} md={4} item>
                 <QrCodeScanner
                   title="Start scanning QR code"

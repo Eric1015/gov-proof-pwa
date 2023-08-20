@@ -10,8 +10,6 @@ import { AppProps } from 'next/app';
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
 import { sepolia } from 'wagmi/chains';
 import { ThemeProvider, createTheme } from '@mui/material';
-import Toast from '@/app/components/Toast';
-import useToast from '@/app/hooks/useToast';
 
 const theme = createTheme({
   palette: {
