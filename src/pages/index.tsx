@@ -16,23 +16,26 @@ export default function Home() {
         }}
       >
         <Container maxWidth="md">
-          <Grid container justifyContent="center">
-            <Grid item xs={5}>
-              <ModeSelectCard
-                title="User"
-                description="verify yourself with the government attested data"
-                image="/icons/user.png"
-                onClick={() => router.push('/users')}
-              />
+          <Grid container justifyContent="center" spacing={2}>
+            <Grid container item xs={12} md={5} justifyContent="center">
+              <Grid item>
+                <ModeSelectCard
+                  title="User"
+                  description="verify yourself with the government attested data"
+                  image="/icons/user.png"
+                  onClick={() => router.push('/users')}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={2}></Grid>
-            <Grid item xs={5}>
-              <ModeSelectCard
-                title="Shop Owner"
-                description="verify your customers meeting the requirements"
-                image="/icons/store.png"
-                onClick={() => router.push('/shops')}
-              />
+            <Grid container item xs={12} md={5} justifyContent="center">
+              <Grid item>
+                <ModeSelectCard
+                  title="Shop Owner"
+                  description="verify your customers meeting the requirements"
+                  image="/icons/store.png"
+                  onClick={() => router.push('/shops')}
+                />
+              </Grid>
             </Grid>
           </Grid>
         </Container>

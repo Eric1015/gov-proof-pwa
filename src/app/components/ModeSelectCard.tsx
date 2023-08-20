@@ -19,7 +19,7 @@ export default function ModeSelectCard({
   onClick,
 }: Props) {
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card raised sx={{ maxWidth: 345 }}>
       <CardActionArea onClick={onClick}>
         <Grid container justifyContent="center">
           <Grid item>
