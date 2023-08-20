@@ -2,7 +2,6 @@ import { Box, AppBar, Toolbar, Typography, Button, Grid } from '@mui/material';
 import Image from 'next/image';
 import logo from '@public/logo/logo-192.png';
 import Link from 'next/link';
-import { useAccount } from 'wagmi';
 import { Web3Button } from '@web3modal/react';
 
 type Props = {

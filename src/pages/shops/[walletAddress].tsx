@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
-import WalletConnect from '@/app/components/WalletConnect';
 import { Button, Container, Grid, TextField } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useAccount } from 'wagmi';
@@ -47,6 +46,12 @@ export default function ShopDetail() {
   };
 
   useEffect(() => {
+    if (walletAddress && address && walletAddress !== address) {
+      router.push(`/shops/${walletAddress}`);
+    }
+  }, [walletAddress, address, router]);
+
+  useEffect(() => {
     setCurrentUrl(`${window.location.host}?targetAddress=${address}`);
   }, [address]);
 
@@ -63,14 +68,12 @@ export default function ShopDetail() {
         newSocket.on(
           'receive-proof',
           async (msg: { attestationUid: string; proof: string }) => {
-            console.log(msg);
             const attestation = await getAttestationByUid(msg.attestationUid);
             const proof = JSON.parse(msg.proof) as MerkleMultiProof;
             const rootHash = attestation?.data;
             if (!rootHash) {
               return;
             }
-            console.log(attestation);
             setRecipientAddress(attestation?.recipient);
             const verificationResult = await verifyMultiProof(proof, rootHash);
             if (verificationResult) {
