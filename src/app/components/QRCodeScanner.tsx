@@ -8,6 +8,7 @@ interface CameraDevice {
 }
 
 type Props = {
+  title: string;
   fps?: number;
   qrbox?: number;
   qrCodeSuccessCallback?: (decodedText: string) => void;
@@ -15,6 +16,7 @@ type Props = {
 };
 
 function QrcodeScanner({
+  title,
   fps = 10,
   qrbox = 250,
   qrCodeSuccessCallback,
@@ -114,9 +116,7 @@ function QrcodeScanner({
         <>
           <div className="flex justify-center text-center items-center">
             <div>
-              <Button onClick={handleRequestCameraPermissions}>
-                Scan QR Code
-              </Button>
+              <Button onClick={handleRequestCameraPermissions}>{title}</Button>
             </div>
           </div>
         </>
