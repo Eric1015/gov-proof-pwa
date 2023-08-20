@@ -42,7 +42,7 @@ function QrcodeScanner({
           await html5QrCodeRef.current.stop();
         }
         html5QrCodeRef.current.clear();
-        if (isMounted) setScanning(false);
+        setScanning(false);
       }
     } catch (e) {
       console.error(e);
@@ -154,6 +154,23 @@ function QrcodeScanner({
             alignItems: 'center',
           }}
         >
+          <Grid container justifyContent="center">
+            <div className="mb-4">
+              <select
+                className="w-72 border-gray-300 rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50"
+                name="cameras"
+                id="cameras"
+                value={selectedCamera}
+                onChange={(e) => handleStartScanning(e.target.value)}
+              >
+                {cameras.map((camera) => (
+                  <option key={camera.id} value={camera.id}>
+                    {camera.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </Grid>
           <Grid container justifyContent="center">
             <Grid item>
               <Button
