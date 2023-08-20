@@ -51,7 +51,6 @@ function QrcodeScanner({
 
   const handleStartScanning = useCallback(
     async (id: string) => {
-      setScanning(true);
       setSelectedCamera(id);
       try {
         if (html5QrCodeRef.current) {
@@ -98,7 +97,7 @@ function QrcodeScanner({
 
   const handleRequestCameraPermissions = useCallback(async () => {
     try {
-      const devices = await Html5Qrcode.getCameras(); // Request camera permissions.
+      const devices = (await Html5Qrcode.getCameras()).reverse(); // Request camera permissions. reversing the order since typically the back camera is the second one in the list.
       if (devices && devices.length) {
         setCameras(devices);
         html5QrCodeRef.current = new Html5Qrcode('reader', false);
