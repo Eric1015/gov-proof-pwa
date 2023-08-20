@@ -52,7 +52,7 @@ export default function ShopDetail() {
   }, [walletAddress, address, router]);
 
   useEffect(() => {
-    setCurrentUrl(`${window.location.host}?targetAddress=${address}`);
+    setCurrentUrl(`https://${window.location.host}?targetAddress=${address}`);
   }, [address]);
 
   useEffect(() => {
