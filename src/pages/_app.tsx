@@ -10,6 +10,7 @@ import { AppProps } from 'next/app';
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
 import { sepolia } from 'wagmi/chains';
 import { ThemeProvider, createTheme } from '@mui/material';
+import '@/app/globals.css';
 
 const theme = createTheme({
   palette: {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useAccount } from 'wagmi';
-import { Grid, Typography } from '@mui/material';
+import { Grid, Typography, Container } from '@mui/material';
 
 export default function Shops() {
   const router = useRouter();
@@ -17,18 +17,20 @@ export default function Shops() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <Grid container justifyContent="center">
-        <Grid xs={12} item>
-          <Typography variant="h5">
-            Connect your wallet to get started
-          </Typography>
-        </Grid>
-        {isRedirecting && (
-          <Grid xs={12} item>
-            <Typography variant="h6">Redirecting...</Typography>
+      <Container maxWidth="md">
+        <Grid container justifyContent="center">
+          <Grid xs={12} item sx={{ m: 2 }}>
+            <Typography variant="h5">
+              Connect your wallet to get started
+            </Typography>
           </Grid>
-        )}
-      </Grid>
+          {isRedirecting && (
+            <Grid xs={12} item sx={{ m: 2 }}>
+              <Typography variant="h6">Redirecting...</Typography>
+            </Grid>
+          )}
+        </Grid>
+      </Container>
     </main>
   );
 }

@@ -127,7 +127,7 @@ export default function ShopDetail() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <Container maxWidth="md" sx={{ mt: 4 }}>
+      <Container maxWidth="md">
         {!isProofVerificationFinished ? (
           <Grid container justifyContent="center">
             <Grid container item>
