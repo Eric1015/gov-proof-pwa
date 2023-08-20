@@ -52,7 +52,7 @@ export default function Users() {
       <Container maxWidth="md">
         {!targetAddress ? (
           <Grid container justifyContent="center">
-            <Grid xs={4} item>
+            <Grid xs={8} md={4} item>
               <QrCodeScanner
                 title="Start scanning the url"
                 qrCodeSuccessCallback={handleQrCodeSuccess}

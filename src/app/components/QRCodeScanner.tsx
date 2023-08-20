@@ -126,21 +126,6 @@ function QrcodeScanner({
 
       {isScanning && (
         <div className="mt-6 text-center">
-          <div className="mb-4">
-            <select
-              className="w-72 border-gray-300 rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50"
-              name="cameras"
-              id="cameras"
-              value={selectedCamera}
-              onChange={(e) => handleStartScanning(e.target.value)}
-            >
-              {cameras.map((camera) => (
-                <option key={camera.id} value={camera.id}>
-                  {camera.label}
-                </option>
-              ))}
-            </select>
-          </div>
           <Button onClick={() => handleStopScanning()}>Stop Scanning</Button>
         </div>
       )}

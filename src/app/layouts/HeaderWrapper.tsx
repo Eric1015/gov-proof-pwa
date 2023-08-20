@@ -10,8 +10,6 @@ type Props = {
 };
 
 const HeaderWrapper = ({ children }: Props) => {
-  const { isConnected } = useAccount();
-
   return (
     <div>
       <Box sx={{ flexGrow: 1 }}>
@@ -36,7 +34,7 @@ const HeaderWrapper = ({ children }: Props) => {
                 </Grid>
               </Grid>
             </Box>
-            {isConnected && <Web3Button icon="show" label="Connect" />}
+            <Web3Button icon="show" label="Connect" />
           </Toolbar>
         </AppBar>
       </Box>
