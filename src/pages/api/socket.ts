@@ -1,6 +1,7 @@
 import { Server } from 'socket.io';
 
-const SocketHandler = (req, res) => {
+// @ts-ignore
+const SocketHandler = (_, res) => {
   if (res.socket.server.io) {
     console.log('Socket is already running');
   } else {
