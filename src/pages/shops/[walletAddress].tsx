@@ -93,7 +93,7 @@ export default function ShopDetail() {
 
   useEffect(() => {
     setCurrentUrl(
-      `https://${window.location.host}?targetAddress=${connectedWalletAddress}`
+      `https://${window.location.host}/users?targetAddress=${connectedWalletAddress}`
     );
   }, [connectedWalletAddress]);
 
