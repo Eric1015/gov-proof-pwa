@@ -4,6 +4,17 @@ const withPWA = require('next-pwa')({
   dest: 'public'
 })
 
-const nextConfig = {}
+const nextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "ipfs.io",
+        port: "",
+        pathname: "/ipfs/**",
+      }
+    ]
+  }
+}
 
 module.exports = withPWA(nextConfig);

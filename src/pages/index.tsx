@@ -10,6 +10,7 @@ export default function Home() {
     '0xf6Bb54Bab66E7Db19Cf71341e23B8D4b4f0aaBBB'
   );
   const [qrCodeData, setQrCodeData] = useState('');
+  const [attestationUid, setAttestationUid] = useState('');
   const [privateDataProof, setPrivateDataProof] = useState('');
 
   const handleQrCodeSuccess = (decodedText: string) => {
@@ -19,17 +20,19 @@ export default function Home() {
 
   const handleProofSubmit = () => {
     if (socket.current) {
+      console.log('Emitting message to server');
       // @ts-ignore
       socket.current.emit('send-proof', {
-        targetAddress,
-        privateDataProof,
+        attestationUid,
+        proof: privateDataProof,
       });
     }
   };
 
   useEffect(() => {
     const socketInitializer = async () => {
-      await fetch(`/api/socket/${targetAddress}`);
+      // awaking the socket server
+      await fetch(`/api/socket`);
       const newSocket = io();
 
       newSocket.on('connect', () => {
@@ -55,10 +58,17 @@ export default function Home() {
           <p>{qrCodeData}</p>
           <TextField
             id="outlined-multiline-static"
-            label="Multiline"
+            label="Attestation UID"
+            placeholder="Your Attestation UID"
+            onChange={(e) => setAttestationUid(e.target.value)}
+          />
+          <TextField
+            id="outlined-multiline-static"
+            label="Proof"
             multiline
             rows={4}
             placeholder="Your Proof"
+            onChange={(e) => setPrivateDataProof(e.target.value)}
           />
           <Button onClick={handleProofSubmit}>Submit</Button>
         </Container>
