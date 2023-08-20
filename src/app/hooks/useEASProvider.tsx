@@ -64,7 +64,7 @@ const useEASProvider = () => {
         { name: 'isVerified', value: true, type: 'bool' },
       ]);
       const expirationTime = BigInt(
-        expiredAfterMinutes * 60 * 1000 + Date.now()
+        expiredAfterMinutes * 60 + Math.floor(Date.now() / 1000)
       );
       return createAttestation(
         verifiedUserSchemaUid,

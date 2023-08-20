@@ -22,6 +22,7 @@ export default function Users() {
   );
   const [attestationUid, setAttestationUid] = useState('');
   const [privateDataProof, setPrivateDataProof] = useState('');
+  const [verifiedAttestationUrl, setVerifiedAttestationUrl] = useState('');
 
   const handleQrCodeSuccess = (decodedText: string) => {
     const url = new URL(decodedText);
@@ -50,6 +51,12 @@ export default function Users() {
 
       newSocket.on('connect', () => {
         console.log('connected');
+      });
+      newSocket.on('receive-verified-attestation', (msg) => {
+        console.log('Received verified attestation');
+        setVerifiedAttestationUrl(
+          `https://sepolia.easscan.org/attestation/view/${msg.attestationUid}`
+        );
       });
       // @ts-ignore
       socket.current = newSocket;
@@ -135,6 +142,20 @@ export default function Users() {
                     Submit
                   </Button>
                 </Grid>
+                {verifiedAttestationUrl && (
+                  <Grid container item justifyContent="center" margin="normal">
+                    <Typography variant="h6">
+                      Verified Attestation:{' '}
+                      <a
+                        href={verifiedAttestationUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        link
+                      </a>
+                    </Typography>
+                  </Grid>
+                )}
               </Grid>
             </Box>
           )}

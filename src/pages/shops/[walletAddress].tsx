@@ -8,6 +8,7 @@ import {
   Box,
   Typography,
 } from '@mui/material';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { useRouter } from 'next/router';
 import { useAccount } from 'wagmi';
 import QRCode from 'react-qr-code';
@@ -46,13 +47,25 @@ export default function ShopDetail() {
     useState(false);
   const [proofVerificationResult, setProofVerificationResult] = useState(false);
   const [showQrCode, setShowQrCode] = useState(false);
+  const [isCreatingAttestation, setIsCreatingAttestation] = useState(false);
 
   const handleGrantUserAccessClick = async () => {
-    const generatedAttestationUid = await createUserVerifiedAttestation(
-      recipientAddress,
-      attestationExpiredIn
-    );
-    setGeneratedAttestationUid(generatedAttestationUid);
+    try {
+      setIsCreatingAttestation(true);
+      const generatedAttestationUid = await createUserVerifiedAttestation(
+        recipientAddress,
+        attestationExpiredIn
+      );
+      setGeneratedAttestationUid(generatedAttestationUid);
+      if (socket.current) {
+        // @ts-ignore
+        socket.current.emit('send-verified-attestation', {
+          attestationUid: generatedAttestationUid,
+        });
+      }
+    } finally {
+      setIsCreatingAttestation(false);
+    }
   };
 
   const extractAttributeFromProof = (
@@ -158,7 +171,9 @@ export default function ShopDetail() {
             spacing={2}
             justifyContent="center"
             sx={{
-              marginTop: 8,
+              mt: 4,
+              pl: 5,
+              pr: 5,
             }}
           >
             {proofVerificationResult && (
@@ -188,7 +203,7 @@ export default function ShopDetail() {
               />
             </Grid>
             <Grid container item>
-              <Grid xs={4} item>
+              <Grid item>
                 <TextField
                   label="User access expire duration (min)"
                   fullWidth
@@ -202,19 +217,28 @@ export default function ShopDetail() {
               </Grid>
             </Grid>
             <Grid container item>
-              <Grid xs={4} item>
-                <Button
+              <Grid item>
+                <LoadingButton
+                  loading={isCreatingAttestation}
                   variant="contained"
                   onClick={handleGrantUserAccessClick}
                 >
                   Grant User Access
-                </Button>
+                </LoadingButton>
               </Grid>
             </Grid>
             {generatedAttestationUid && (
-              <Grid container item justifyContent="center">
-                <Grid xs={4} item>
-                  <p>{generatedAttestationUid}</p>
+              <Grid container item>
+                <Grid item>
+                  <Typography variant="body2">
+                    {'Generated Attestation: '}
+                    <a
+                      href={`https://sepolia.easscan.org/attestation/view/${generatedAttestationUid}`}
+                      target="_blank"
+                    >
+                      link
+                    </a>
+                  </Typography>
                 </Grid>
               </Grid>
             )}

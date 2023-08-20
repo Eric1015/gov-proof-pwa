@@ -13,6 +13,7 @@
     "@emotion/styled": "^11.11.0",
     "@ethereum-attestation-service/eas-sdk": "^1.1.0-beta.3",
     "@mui/icons-material": "^5.14.3",
+    "@mui/lab": "^5.0.0-alpha.140",
     "@mui/material": "^5.14.5",
     "@openzeppelin/merkle-tree": "^1.0.5",
     "@tailwindcss/typography": "^0.5.9",

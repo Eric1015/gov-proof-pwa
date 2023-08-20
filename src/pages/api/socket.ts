@@ -14,6 +14,11 @@ const SocketHandler = (_, res) => {
         console.log('Broadcasting proof to all sockets');
         socket.broadcast.emit('receive-proof', msg);
       });
+
+      socket.on('send-verified-attestation', (msg) => {
+        console.log('Broadcasting verified attestation to all sockets');
+        socket.broadcast.emit('receive-verified-attestation', msg);
+      });
     });
   }
   res.end();
