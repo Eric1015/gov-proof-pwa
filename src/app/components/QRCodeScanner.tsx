@@ -153,7 +153,8 @@ function QrcodeScanner({
             alignItems: 'center',
           }}
         >
-          <Grid container justifyContent="center">
+          {/* Camera Devices selection */}
+          {/* <Grid container justifyContent="center">
             <div className="mb-4">
               <select
                 className="w-72 border-gray-300 rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50"
@@ -169,7 +170,7 @@ function QrcodeScanner({
                 ))}
               </select>
             </div>
-          </Grid>
+          </Grid> */}
           <Grid container justifyContent="center">
             <Grid item>
               <Button
