@@ -1,92 +1,42 @@
-import { useEffect, useRef, useState } from 'react';
-import { io } from 'socket.io-client';
-import { Button, Container, Grid, TextField } from '@mui/material';
-import QrCodeScanner from '@/app/components/QRCodeScanner';
-import { useSearchParams } from 'next/navigation';
+import { Container, Grid, Box } from '@mui/material';
+import { useRouter } from 'next/navigation';
+import ModeSelectCard from '@/app/components/ModeSelectCard';
 
 export default function Home() {
-  const searchParams = useSearchParams();
-  const socket = useRef();
-  const [targetAddress, setTargetAddress] = useState(
-    searchParams.get('targetAddress')
-  );
-  const [attestationUid, setAttestationUid] = useState('');
-  const [privateDataProof, setPrivateDataProof] = useState('');
-
-  const handleQrCodeSuccess = (decodedText: string) => {
-    const url = new URL(decodedText);
-    const params = new URLSearchParams(url.search);
-    if (!!params.get('targetAddress')) {
-      setTargetAddress(params.get('targetAddress'));
-    }
-  };
-
-  const handleProofSubmit = () => {
-    if (socket.current) {
-      // @ts-ignore
-      socket.current.emit('send-proof', {
-        attestationUid,
-        proof: privateDataProof,
-      });
-    }
-  };
-
-  useEffect(() => {
-    const socketInitializer = async () => {
-      // awaking the socket server
-      await fetch(`/api/socket`);
-      const newSocket = io();
-
-      newSocket.on('connect', () => {
-        console.log('connected');
-      });
-      // @ts-ignore
-      socket.current = newSocket;
-    };
-
-    socketInitializer();
-  }, [targetAddress]);
+  const router = useRouter();
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
         <Container maxWidth="md">
-          {!targetAddress ? (
-            <Grid container justifyContent="center">
-              <Grid xs={4} item>
-                <QrCodeScanner
-                  title="Start scanning the url"
-                  qrCodeSuccessCallback={handleQrCodeSuccess}
-                />
-              </Grid>
+          <Grid container justifyContent="center">
+            <Grid item xs={5}>
+              <ModeSelectCard
+                title="User"
+                description="verify yourself with the government attested data"
+                image="/icons/user.png"
+                onClick={() => router.push('/users')}
+              />
             </Grid>
-          ) : (
-            <Container>
-              <Grid container justifyContent="center">
-                <TextField
-                  id="outlined-multiline-static"
-                  label="Attestation UID"
-                  placeholder="Your Attestation UID"
-                  onChange={(e) => setAttestationUid(e.target.value)}
-                />
-              </Grid>
-              <Grid container justifyContent="center">
-                <TextField
-                  id="outlined-multiline-static"
-                  label="Proof"
-                  multiline
-                  rows={4}
-                  placeholder="Your Proof"
-                  onChange={(e) => setPrivateDataProof(e.target.value)}
-                />
-              </Grid>
-              <Grid container justifyContent="center">
-                <Button onClick={handleProofSubmit}>Submit</Button>
-              </Grid>
-            </Container>
-          )}
+            <Grid item xs={2}></Grid>
+            <Grid item xs={5}>
+              <ModeSelectCard
+                title="Shop Owner"
+                description="verify your customers meeting the requirements"
+                image="/icons/store.png"
+                onClick={() => router.push('/shops')}
+              />
+            </Grid>
+          </Grid>
         </Container>
-      </div>
+      </Box>
     </main>
   );
 }

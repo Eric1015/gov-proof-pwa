@@ -88,62 +88,59 @@ export default function ShopDetail() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <WalletConnect />
-        <Container maxWidth="md">
-          <Grid container justifyContent="center">
-            <Grid xs={4} item>
-              <QRCode
-                size={256}
-                style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
-                value={currentUrl}
-                viewBox={`0 0 256 256`}
-              />
-            </Grid>
+      <Container maxWidth="md">
+        <Grid container justifyContent="center">
+          <Grid xs={4} item>
+            <QRCode
+              size={256}
+              style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
+              value={currentUrl}
+              viewBox={`0 0 256 256`}
+            />
           </Grid>
-          {imageUrl && (
-            <Grid container>
-              <Grid container justifyContent="center">
-                <Grid xs={4} item>
-                  <Image
-                    src={imageUrl}
-                    alt="profile image"
-                    height={200}
-                    width={200}
-                  />
-                </Grid>
+        </Grid>
+        {imageUrl && (
+          <Grid container>
+            <Grid container justifyContent="center">
+              <Grid xs={4} item>
+                <Image
+                  src={imageUrl}
+                  alt="profile image"
+                  height={200}
+                  width={200}
+                />
               </Grid>
-              <Grid container justifyContent="center">
-                <Grid xs={4} item>
-                  <TextField
-                    label="Expire duration (min)"
-                    placeholder="Expire in"
-                    defaultValue={10}
-                    type="number"
-                    onChange={(event) =>
-                      setAttestationExpiredIn(Number(event.target.value))
-                    }
-                  />
-                </Grid>
-              </Grid>
-              <Grid container justifyContent="center">
-                <Grid xs={4} item>
-                  <Button onClick={handleGrantUserAccessClick}>
-                    Grant User Access
-                  </Button>
-                </Grid>
-              </Grid>
-              {generatedAttestationUid && (
-                <Grid container justifyContent="center">
-                  <Grid xs={4} item>
-                    <p>{generatedAttestationUid}</p>
-                  </Grid>
-                </Grid>
-              )}
             </Grid>
-          )}
-        </Container>
-      </div>
+            <Grid container justifyContent="center">
+              <Grid xs={4} item>
+                <TextField
+                  label="Expire duration (min)"
+                  placeholder="Expire in"
+                  defaultValue={10}
+                  type="number"
+                  onChange={(event) =>
+                    setAttestationExpiredIn(Number(event.target.value))
+                  }
+                />
+              </Grid>
+            </Grid>
+            <Grid container justifyContent="center">
+              <Grid xs={4} item>
+                <Button onClick={handleGrantUserAccessClick}>
+                  Grant User Access
+                </Button>
+              </Grid>
+            </Grid>
+            {generatedAttestationUid && (
+              <Grid container justifyContent="center">
+                <Grid xs={4} item>
+                  <p>{generatedAttestationUid}</p>
+                </Grid>
+              </Grid>
+            )}
+          </Grid>
+        )}
+      </Container>
     </main>
   );
 }
