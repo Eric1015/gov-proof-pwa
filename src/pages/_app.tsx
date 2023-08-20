@@ -27,7 +27,7 @@ const theme = createTheme({
 
 const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || '';
 
-const supportedChains = [mainnet, sepolia];
+const supportedChains = [sepolia];
 
 const { publicClient } = configureChains(supportedChains, [
   w3mProvider({ projectId }),
