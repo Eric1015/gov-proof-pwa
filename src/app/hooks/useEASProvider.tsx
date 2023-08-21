@@ -3,8 +3,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { useSigner } from '@/app/helpers/wagmiHelper';
 
 const EASContractAddress = '0xC2679fBD37d54388Ce493F1DB75320D236e1815e'; // Sepolia v0.26
-const privateDataSchemaUid =
-  process.env.NEXT_PUBLIC_EAS_PRIVATE_DATA_SCHEMA_UID || '';
 
 const verifiedUserSchemaUid =
   process.env.NEXT_PUBLIC_EAS_VERIFIED_USER_SCHEMA_UID || '';
@@ -37,24 +35,6 @@ const useEASProvider = () => {
       return await tx.wait();
     },
     [easClient]
-  );
-
-  const createUserInfoAttestation = useCallback(
-    async (
-      recipient: string,
-      isAdult: boolean,
-      faceImageCid: string
-    ): Promise<string> => {
-      const schemaEncoder = new SchemaEncoder(
-        'bool isAdult, string face_image_cid'
-      );
-      const encodedData = schemaEncoder.encodeData([
-        { name: 'isAdult', value: isAdult, type: 'bool' },
-        { name: 'face_image_cid', value: faceImageCid, type: 'string' },
-      ]);
-      return createAttestation(privateDataSchemaUid, recipient, encodedData);
-    },
-    [createAttestation]
   );
 
   const createUserVerifiedAttestation = useCallback(
@@ -103,7 +83,6 @@ const useEASProvider = () => {
   }, [easClient, signer]);
 
   return {
-    createUserInfoAttestation,
     getAttestationByUid,
     createUserVerifiedAttestation,
   };

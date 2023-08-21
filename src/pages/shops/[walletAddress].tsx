@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
-import { io } from 'socket.io-client';
+import { useEffect, useState } from 'react';
 import {
   Button,
   Container,
@@ -25,16 +24,12 @@ import useAblyChannel from '@/app/hooks/useAblyChannel';
 export default function ShopDetail() {
   const router = useRouter();
   const { walletAddress = '' } = router.query;
-  const { isConnected, address: connectedWalletAddress } = useAccount();
+  const { address: connectedWalletAddress } = useAccount();
   const { getAttestationByUid, createUserVerifiedAttestation } =
     useEASProvider();
-  const socket = useRef();
   const [currentUrl, setCurrentUrl] = useState(
     typeof window !== 'undefined' ? window.location.host : ''
   );
-  const [attestationUid, setAttestationUid] = useState('');
-  const [providedPrivateDataProof, setProvidedPrivateDataProof] =
-    useState<MerkleMultiProof>();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
@@ -72,10 +67,7 @@ export default function ShopDetail() {
     setProofVerificationFinished(true);
   });
 
-  const [channel, ably] = useAblyChannel(
-    'transfer-verified-attestation',
-    (msg) => {}
-  );
+  const [channel] = useAblyChannel('transfer-verified-attestation', (_) => {});
 
   const handleGrantUserAccessClick = async () => {
     try {
@@ -85,17 +77,11 @@ export default function ShopDetail() {
         attestationExpiredIn
       );
       setGeneratedAttestationUid(generatedAttestationUid);
-      if (socket.current) {
-        // @ts-ignore
-        channel.publish({
-          name: 'send-verified-attestation',
-          data: { attestationUid: generatedAttestationUid },
-        });
-        // @ts-ignore
-        // socket.current.emit('send-verified-attestation', {
-        //   attestationUid: generatedAttestationUid,
-        // });
-      }
+      // @ts-ignore
+      channel.publish({
+        name: 'send-verified-attestation',
+        data: { attestationUid: generatedAttestationUid },
+      });
     } finally {
       setIsCreatingAttestation(false);
     }
@@ -129,48 +115,6 @@ export default function ShopDetail() {
       `https://${window.location.host}/users?targetAddress=${connectedWalletAddress}`
     );
   }, [connectedWalletAddress]);
-
-  useEffect(() => {
-    const socketInitializer = async () => {
-      if (connectedWalletAddress) {
-        // awaking the socket server
-        await fetch(`/api/socket`);
-        const newSocket = io();
-
-        newSocket.on('connect', () => {
-          console.log('connected');
-        });
-
-        // newSocket.on(
-        //   'receive-proof',
-        //   async (msg: { attestationUid: string; proof: string }) => {
-        //     const attestation = await getAttestationByUid(msg.attestationUid);
-        //     const proof = JSON.parse(msg.proof) as MerkleMultiProof;
-        //     const rootHash = attestation?.data;
-        //     if (!rootHash) {
-        //       return;
-        //     }
-        //     setRecipientAddress(attestation?.recipient);
-        //     const verificationResult = await verifyMultiProof(proof, rootHash);
-        //     if (verificationResult) {
-        //       setFirstName(extractAttributeFromProof(proof, 'firstName'));
-        //       setLastName(extractAttributeFromProof(proof, 'lastName'));
-        //       setDateOfBirth(extractAttributeFromProof(proof, 'dateOfBirth'));
-        //       setAddress(extractAttributeFromProof(proof, 'address'));
-        //       setAdult(extractAttributeFromProof(proof, 'isAdult'));
-        //       setImageUrl(extractAttributeFromProof(proof, 'imageUrl'));
-        //     }
-        //     setProofVerificationResult(verificationResult);
-        //     setProofVerificationFinished(true);
-        //   }
-        // );
-        // @ts-ignore
-        socket.current = newSocket;
-      }
-    };
-
-    socketInitializer();
-  }, [connectedWalletAddress, getAttestationByUid]);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">

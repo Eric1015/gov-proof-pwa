@@ -2,9 +2,15 @@
 
 GovProof leverages the Ethereum Attestation Service ([link](https://docs.attest.sh/docs/welcome)) to offer a streamlined and secure method of personal information verification for both consumers and service providers. Upon arrival at a participating location, customers scan a QR code and choose the personal information they wish to share for verification. Once verified, service providers can create an attestation for the user, allowing re-entry within a specified time frame without needing to re-verify.
 
-Built as part of the ETHToronto hackathon: https://dorahacks.io/hackathon/ethtoronto2023/buidl
+* Built as part of the ETHToronto hackathon: https://dorahacks.io/hackathon/ethtoronto2023/buidl
 
-Dorahacks BUIDL url: https://dorahacks.io/buidl/6804
+* Dorahacks BUIDL url: https://dorahacks.io/buidl/6804
+
+* Demo url: https://gov-proof-pwa.vercel.app/
+
+*** The website supports PWA and you can install it on the mobile phone after opening in the mobile browser. ***
+
+*** The QR code scanner has issues on iOS devices and it might not work on the iOS devices. Scan QR code with the iOS built-in QR code scanner please. ***
 
 * Demo video:
 <div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe src="https://www.loom.com/embed/606d9ee79ea149e7bebc3da68e0d6389?sid=38553b9b-5873-4153-a466-9b24cc03ecd3" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>

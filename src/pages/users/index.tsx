@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
-import { io } from 'socket.io-client';
+import { useEffect, useState } from 'react';
 import {
   Button,
   Container,
@@ -16,7 +15,6 @@ import useAblyChannel from '@/app/hooks/useAblyChannel';
 
 export default function Users() {
   const searchParams = useSearchParams();
-  const socket = useRef();
   const { isToastOpen, severity, message, closeToast, openToast } = useToast();
   const [targetAddress, setTargetAddress] = useState(
     searchParams.get('targetAddress')
@@ -25,7 +23,7 @@ export default function Users() {
   const [privateDataProof, setPrivateDataProof] = useState('');
   const [verifiedAttestationUrl, setVerifiedAttestationUrl] = useState('');
 
-  const [channel, ably] = useAblyChannel('transfer-proof', (msg) => {});
+  const [channel] = useAblyChannel('transfer-proof', (_) => {});
 
   useAblyChannel('transfer-verified-attestation', (msg) => {
     const data = msg.data;
@@ -43,45 +41,16 @@ export default function Users() {
   };
 
   const handleProofSubmit = () => {
-    if (socket.current) {
-      // @ts-ignore
-      channel.publish({
-        name: 'send-proof',
-        data: {
-          attestationUid,
-          proof: privateDataProof,
-        },
-      });
-      // @ts-ignore
-      // socket.current.emit('send-proof', {
-      //   attestationUid,
-      //   proof: privateDataProof,
-      // });
-      openToast('Successfully sent proof', 'success');
-    }
+    // @ts-ignore
+    channel.publish({
+      name: 'send-proof',
+      data: {
+        attestationUid,
+        proof: privateDataProof,
+      },
+    });
+    openToast('Successfully sent proof', 'success');
   };
-
-  useEffect(() => {
-    const socketInitializer = async () => {
-      // awaking the socket server
-      await fetch(`/api/socket`);
-      const newSocket = io();
-
-      newSocket.on('connect', () => {
-        console.log('connected');
-      });
-      newSocket.on('receive-verified-attestation', (msg) => {
-        console.log('Received verified attestation');
-        setVerifiedAttestationUrl(
-          `https://sepolia.easscan.org/attestation/view/${msg.attestationUid}`
-        );
-      });
-      // @ts-ignore
-      socket.current = newSocket;
-    };
-
-    socketInitializer();
-  }, [targetAddress]);
 
   useEffect(() => {
     setTargetAddress(searchParams.get('targetAddress'));
