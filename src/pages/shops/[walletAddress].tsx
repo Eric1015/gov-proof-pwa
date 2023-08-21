@@ -269,6 +269,7 @@ export default function ShopDetail() {
               <Grid item>
                 <LoadingButton
                   loading={isCreatingAttestation}
+                  disabled={!proofVerificationResult}
                   variant="contained"
                   onClick={handleGrantUserAccessClick}
                 >
