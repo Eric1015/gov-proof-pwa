@@ -44,6 +44,7 @@ export default function Users() {
 
   const handleProofSubmit = () => {
     if (socket.current) {
+      // @ts-ignore
       channel.publish({
         name: 'send-proof',
         data: {

@@ -85,6 +85,7 @@ export default function ShopDetail() {
       );
       setGeneratedAttestationUid(generatedAttestationUid);
       if (socket.current) {
+        // @ts-ignore
         channel.publish({
           name: 'send-verified-attestation',
           data: { attestationUid: generatedAttestationUid },
