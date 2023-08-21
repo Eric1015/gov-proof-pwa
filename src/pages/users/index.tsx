@@ -12,6 +12,7 @@ import QrCodeScanner from '@/app/components/QRCodeScanner';
 import { useSearchParams } from 'next/navigation';
 import useToast from '@/app/hooks/useToast';
 import Toast from '@/app/components/Toast';
+import useAblyChannel from '@/app/hooks/useAblyChannel';
 
 export default function Users() {
   const searchParams = useSearchParams();
@@ -24,6 +25,15 @@ export default function Users() {
   const [privateDataProof, setPrivateDataProof] = useState('');
   const [verifiedAttestationUrl, setVerifiedAttestationUrl] = useState('');
 
+  const [channel, ably] = useAblyChannel('transfer-proof', (msg) => {});
+
+  useAblyChannel('transfer-verified-attestation', (msg) => {
+    const data = msg.data;
+    setVerifiedAttestationUrl(
+      `https://sepolia.easscan.org/attestation/view/${data.attestationUid}`
+    );
+  });
+
   const handleQrCodeSuccess = (decodedText: string) => {
     const url = new URL(decodedText);
     const params = new URLSearchParams(url.search);
@@ -34,11 +44,18 @@ export default function Users() {
 
   const handleProofSubmit = () => {
     if (socket.current) {
-      // @ts-ignore
-      socket.current.emit('send-proof', {
-        attestationUid,
-        proof: privateDataProof,
+      channel.publish({
+        name: 'send-proof',
+        data: {
+          attestationUid,
+          proof: privateDataProof,
+        },
       });
+      // @ts-ignore
+      // socket.current.emit('send-proof', {
+      //   attestationUid,
+      //   proof: privateDataProof,
+      // });
       openToast('Successfully sent proof', 'success');
     }
   };

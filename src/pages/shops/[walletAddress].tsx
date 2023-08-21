@@ -11,7 +11,6 @@ import {
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useRouter } from 'next/router';
 import { useAccount } from 'wagmi';
-import QRCode from 'react-qr-code';
 import {
   MerkleMultiProof,
   verifyMultiProof,
@@ -20,6 +19,7 @@ import useEASProvider from '@/app/hooks/useEASProvider';
 import UserInformation from '@/app/components/UserInformation';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ShopQRCodeModal from '@/app/components/ShopQRCodeModal';
+import useAblyChannel from '@/app/hooks/useAblyChannel';
 
 export default function ShopDetail() {
   const router = useRouter();
@@ -49,6 +49,33 @@ export default function ShopDetail() {
   const [showQrCode, setShowQrCode] = useState(false);
   const [isCreatingAttestation, setIsCreatingAttestation] = useState(false);
 
+  useAblyChannel('transfer-proof', async (msg: any) => {
+    const data = msg.data;
+    const attestation = await getAttestationByUid(data.attestationUid);
+    const proof = JSON.parse(data.proof) as MerkleMultiProof;
+    const rootHash = attestation?.data;
+    if (!rootHash) {
+      return;
+    }
+    setRecipientAddress(attestation?.recipient);
+    const verificationResult = await verifyMultiProof(proof, rootHash);
+    if (verificationResult) {
+      setFirstName(extractAttributeFromProof(proof, 'firstName'));
+      setLastName(extractAttributeFromProof(proof, 'lastName'));
+      setDateOfBirth(extractAttributeFromProof(proof, 'dateOfBirth'));
+      setAddress(extractAttributeFromProof(proof, 'address'));
+      setAdult(extractAttributeFromProof(proof, 'isAdult'));
+      setImageUrl(extractAttributeFromProof(proof, 'imageUrl'));
+    }
+    setProofVerificationResult(verificationResult);
+    setProofVerificationFinished(true);
+  });
+
+  const [channel, ably] = useAblyChannel(
+    'transfer-verified-attestation',
+    (msg) => {}
+  );
+
   const handleGrantUserAccessClick = async () => {
     try {
       setIsCreatingAttestation(true);
@@ -58,10 +85,14 @@ export default function ShopDetail() {
       );
       setGeneratedAttestationUid(generatedAttestationUid);
       if (socket.current) {
-        // @ts-ignore
-        socket.current.emit('send-verified-attestation', {
-          attestationUid: generatedAttestationUid,
+        channel.publish({
+          name: 'send-verified-attestation',
+          data: { attestationUid: generatedAttestationUid },
         });
+        // @ts-ignore
+        // socket.current.emit('send-verified-attestation', {
+        //   attestationUid: generatedAttestationUid,
+        // });
       }
     } finally {
       setIsCreatingAttestation(false);
@@ -107,29 +138,30 @@ export default function ShopDetail() {
         newSocket.on('connect', () => {
           console.log('connected');
         });
-        newSocket.on(
-          'receive-proof',
-          async (msg: { attestationUid: string; proof: string }) => {
-            const attestation = await getAttestationByUid(msg.attestationUid);
-            const proof = JSON.parse(msg.proof) as MerkleMultiProof;
-            const rootHash = attestation?.data;
-            if (!rootHash) {
-              return;
-            }
-            setRecipientAddress(attestation?.recipient);
-            const verificationResult = await verifyMultiProof(proof, rootHash);
-            if (verificationResult) {
-              setFirstName(extractAttributeFromProof(proof, 'firstName'));
-              setLastName(extractAttributeFromProof(proof, 'lastName'));
-              setDateOfBirth(extractAttributeFromProof(proof, 'dateOfBirth'));
-              setAddress(extractAttributeFromProof(proof, 'address'));
-              setAdult(extractAttributeFromProof(proof, 'isAdult'));
-              setImageUrl(extractAttributeFromProof(proof, 'imageUrl'));
-            }
-            setProofVerificationResult(verificationResult);
-            setProofVerificationFinished(true);
-          }
-        );
+
+        // newSocket.on(
+        //   'receive-proof',
+        //   async (msg: { attestationUid: string; proof: string }) => {
+        //     const attestation = await getAttestationByUid(msg.attestationUid);
+        //     const proof = JSON.parse(msg.proof) as MerkleMultiProof;
+        //     const rootHash = attestation?.data;
+        //     if (!rootHash) {
+        //       return;
+        //     }
+        //     setRecipientAddress(attestation?.recipient);
+        //     const verificationResult = await verifyMultiProof(proof, rootHash);
+        //     if (verificationResult) {
+        //       setFirstName(extractAttributeFromProof(proof, 'firstName'));
+        //       setLastName(extractAttributeFromProof(proof, 'lastName'));
+        //       setDateOfBirth(extractAttributeFromProof(proof, 'dateOfBirth'));
+        //       setAddress(extractAttributeFromProof(proof, 'address'));
+        //       setAdult(extractAttributeFromProof(proof, 'isAdult'));
+        //       setImageUrl(extractAttributeFromProof(proof, 'imageUrl'));
+        //     }
+        //     setProofVerificationResult(verificationResult);
+        //     setProofVerificationFinished(true);
+        //   }
+        // );
         // @ts-ignore
         socket.current = newSocket;
       }

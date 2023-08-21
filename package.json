@@ -22,6 +22,7 @@
     "@types/react-dom": "18.2.7",
     "@web3modal/ethereum": "^2.7.1",
     "@web3modal/react": "^2.7.1",
+    "ably": "1.2.5-beta.1",
     "autoprefixer": "10.4.15",
     "eslint": "8.47.0",
     "eslint-config-next": "13.2.4",
