@@ -18,6 +18,7 @@ import {
 import useEASProvider from '@/app/hooks/useEASProvider';
 import UserInformation from '@/app/components/UserInformation';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import GppBadIcon from '@mui/icons-material/GppBad';
 import ShopQRCodeModal from '@/app/components/ShopQRCodeModal';
 import useAblyChannel from '@/app/hooks/useAblyChannel';
 
@@ -209,7 +210,7 @@ export default function ShopDetail() {
               pr: 5,
             }}
           >
-            {proofVerificationResult && (
+            {proofVerificationResult ? (
               <Grid container item spacing={1}>
                 <Grid item>
                   <CheckCircleIcon color="success" />
@@ -221,6 +222,21 @@ export default function ShopDetail() {
                     sx={{ color: '#2e7d32' }}
                   >
                     Verified
+                  </Typography>
+                </Grid>
+              </Grid>
+            ) : (
+              <Grid container item spacing={1}>
+                <Grid item>
+                  <GppBadIcon color="error" />
+                </Grid>
+                <Grid item>
+                  <Typography
+                    variant="body1"
+                    color="error"
+                    sx={{ color: '#f4c7c3' }}
+                  >
+                    Not matching
                   </Typography>
                 </Grid>
               </Grid>
