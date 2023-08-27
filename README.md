@@ -13,7 +13,9 @@ GovProof leverages the Ethereum Attestation Service ([link](https://docs.attest.
 *** The QR code scanner has issues on iOS devices and it might not work on the iOS devices. Scan QR code with the iOS built-in QR code scanner please. ***
 
 * Demo video:
-<div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe src="https://www.loom.com/embed/606d9ee79ea149e7bebc3da68e0d6389?sid=38553b9b-5873-4153-a466-9b24cc03ecd3" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+
+[![demo video](https://cdn.loom.com/sessions/thumbnails/606d9ee79ea149e7bebc3da68e0d6389-with-play.gif)](https://www.loom.com/embed/606d9ee79ea149e7bebc3da68e0d6389?sid=38553b9b-5873-4153-a466-9b24cc03ecd3)
+
 
 
 ## Getting Started
